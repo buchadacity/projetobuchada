@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123b32">
+  <meta name="description" content="Registro de serviços de campo e materiais da viatura.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>Campo • Serviços e materiais</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">C</div><div><strong>Campo</strong><span>Registro de equipe</span></div></div>
+    <div class="top-actions"><button class="icon-button" id="exportButton" aria-label="Exportar backup" title="Exportar backup" hidden>⇩</button><button class="logout-button" id="logoutButton" hidden>Sair</button></div>
+  </header>
+  <main id="authGate" class="auth-page">
+    <form id="loginForm" class="login-card">
+      <div class="brand-icon login-mark">C</div><p class="eyebrow">ACESSO DA EQUIPE</p><h1>Entrar no Campo</h1>
+      <p class="subtle" id="authMessage">Digite seu login e sua senha.</p>
+      <label>Login<input name="team_login" type="text" value="" autocomplete="off" autocapitalize="none" spellcheck="false" required placeholder="Digite seu login"></label>
+      <label>Senha<input name="team_passcode" type="password" value="" autocomplete="new-password" required placeholder="Digite sua senha"></label>
+      <button class="primary-button" id="loginButton" type="submit" disabled>Entrar</button>
+      <small id="authHint">As notas e as fotos são salvas na conta da equipe.</small>
+    </form>
+  </main>
+  <main id="appShell" class="hidden">
+    <section class="intro"><div><p class="eyebrow">CONTROLE DE CAMPO</p><h1>Olá, equipe.</h1><p class="subtle">Registre serviços, fotos e materiais da viatura.</p></div><div class="date-pill" id="today"></div></section>
+    <div class="global-search"><span aria-hidden="true">⌕</span><input id="globalSearch" type="search" placeholder="Pesquisar serviços, OS, medidor ou materiais" autocomplete="off"><button id="clearSearch" type="button" aria-label="Limpar pesquisa" hidden>×</button></div>
+    <nav class="tabs" aria-label="Seções"><button class="tab active" data-tab="services">Serviços <span id="serviceCount" class="count">0</span></button><button class="tab" data-tab="materials">Meus materiais</button></nav>
+    <section id="servicesPanel" class="panel">
+      <div class="section-heading"><div><p class="eyebrow">ATENDIMENTOS</p><h2>Notas de serviço</h2></div><button class="primary-button" id="newService">＋ Nova nota</button></div>
+      <div id="serviceList" class="service-list"></div>
+      <div id="emptyServices" class="empty-state"><div class="empty-icon">▤</div><strong>Nenhuma nota por aqui</strong><p>Toque em “Nova nota” para registrar um serviço.</p></div>
+    </section>
+    <section id="materialsPanel" class="panel hidden">
+      <div class="section-heading"><div><p class="eyebrow">NA VIATURA</p><h2>Meus materiais</h2></div><button class="primary-button" id="addMaterial">＋ Adicionar</button></div>
+      <p class="subtle materials-hint">Informe o saldo que está na viatura e quanto a equipe precisa ter. O sistema mostra automaticamente o que está faltando.</p>
+      <div class="stock-summary"><span>Itens para repor</span><strong id="shortageCount">0</strong></div>
+      <div id="materialList" class="material-list"></div>
+      <div id="emptyMaterials" class="empty-state"><div class="empty-icon">▦</div><strong>Cadastre os materiais da equipe</strong><p>Inclua medidores, cabos e outros itens da viatura.</p><button class="secondary-button" id="starterMaterials">Criar lista de medidores e cabos</button></div>
+    </section>
+  </main>
+  <dialog id="serviceDialog" class="dialog"><form id="serviceForm">
+    <div class="dialog-head"><div><p class="eyebrow">NOVO REGISTRO</p><h2 id="serviceDialogTitle">Nota de serviço</h2></div><button type="button" class="close-button" data-close="serviceDialog" aria-label="Fechar">×</button></div>
+    <div class="form-grid">
+      <label class="wide">Tipo de serviço<select name="service" required><option value="">Selecione o serviço</option><option>BAIXA ADM/ BAIXA A PEDIDO</option><option>CORTE</option><option>RECORTE</option><option>RELIGA</option><option>REATIVAÇÃO</option><option>LIGAÇÃO NOVA</option><option>AFERIÇÃO</option><option>VERIFICAÇÃO</option><option>MICRO GERAÇÃO</option><option>ALTERAÇÃO CONTRATUAL</option><option>MUDANÇA DE MEDIDOR DE LOCAL</option></select></label>
+      <label>Nº da nota/OS<input name="order" autocomplete="off" placeholder="Opcional"></label><label>Tipo de medidor<select name="meter"><option value="">Não se aplica</option><option>Monofásico</option><option>Trifásico</option></select></label>
+      <label class="wide">Número do medidor<input name="meterNumber" inputmode="numeric" autocomplete="off" placeholder="Número de identificação do medidor"></label>
+      <label class="wide">Data e hora em que o serviço foi feito<input name="serviceDate" type="datetime-local" required></label>
+      <label class="wide">Leitura do medidor (kWh)<input name="reading" type="number" min="0" step="any" inputmode="decimal" placeholder="Opcional"></label>
+      <div class="wide photo-field"><label for="photo">Foto do medidor ou serviço</label><input id="photo" name="photo" type="file" accept="image/*" capture="environment"><div id="photoPreview" class="photo-preview"><span>Escolha ou tire uma foto</span></div></div>
+      <div class="wide location-box"><div class="location-title"><div><label>Localização do serviço</label><p id="locationStatus">Use sua localização ou informe as coordenadas manualmente.</p></div><button type="button" class="secondary-button" id="locateButton">Usar localização atual</button></div>
+        <div class="coordinate-row"><label>Latitude<input name="lat" inputmode="decimal" placeholder="Ex.: -23.550520"></label><label>Longitude<input name="lng" inputmode="decimal" placeholder="Ex.: -46.633308"></label></div>
+        <button type="button" class="text-button" id="openMapButton">Abrir ponto no Google Maps ↗</button><small>Se estiver em outro local, ajuste as coordenadas ou escolha o ponto no Maps e copie latitude e longitude.</small>
+      </div>
+      <label class="wide">Observações<textarea name="notes" rows="3" placeholder="Detalhes importantes do atendimento..."></textarea></label>
+    </div>
+    <div class="dialog-actions"><button type="button" class="secondary-button" data-close="serviceDialog">Cancelar</button><button class="primary-button" id="saveServiceButton" type="submit">Fechar nota</button></div>
+  </form></dialog>
+  <dialog id="materialDialog" class="dialog"><form id="materialForm">
+    <div class="dialog-head"><div><p class="eyebrow">ESTOQUE DA EQUIPE</p><h2 id="materialDialogTitle">Adicionar material</h2></div><button type="button" class="close-button" data-close="materialDialog" aria-label="Fechar">×</button></div>
+    <input type="hidden" name="id">
+    <div class="form-grid">
+      <label class="wide">Material<input name="name" required placeholder="Ex.: Medidor"></label>
+      <label>Tipo<select name="kind"><option>Medidor</option><option>Cabo sucata</option><option>Cabo novo</option><option>Outro</option></select></label>
+      <label>Fase/tipo<select name="phase"><option value="">Não se aplica</option><option>Monofásico</option><option>Trifásico</option></select></label>
+      <label>Material do cabo<select name="conductor"><option value="">Não se aplica</option><option>Alumínio</option><option>Cobre</option></select></label>
+      <label>Unidade<input name="unit" placeholder="un, m, rolo..." value="un"></label>
+      <label>Quantidade na viatura<input name="quantity" type="number" min="0" step="any" inputmode="decimal" value="0" required></label>
+      <label>Quantidade necessária<input name="target" type="number" min="0" step="any" inputmode="decimal" value="0" required></label>
+    </div>
+    <p class="subtle">A quantidade necessária é a referência para calcular o que está faltando.</p>
+    <div class="dialog-actions"><button type="button" class="secondary-button" data-close="materialDialog">Cancelar</button><button class="primary-button" type="submit">Salvar material</button></div>
+  </form></dialog>
+  <dialog id="detailDialog" class="dialog"><div id="detailContent"></div><div class="dialog-actions" id="detailActions"></div></dialog>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
