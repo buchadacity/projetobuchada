@@ -16,11 +16,11 @@
     <div class="top-actions"><button class="icon-button" id="exportButton" aria-label="Exportar backup" title="Exportar backup" hidden>⇩</button><button class="logout-button" id="logoutButton" hidden>Sair</button></div>
   </header>
   <main id="authGate" class="auth-page">
-    <form id="loginForm" class="login-card">
+    <form id="loginForm" class="login-card" autocomplete="off">
       <div class="brand-icon login-mark">C</div><p class="eyebrow">ACESSO DA EQUIPE</p><h1>Entrar no Campo</h1>
       <p class="subtle" id="authMessage">Digite seu login e sua senha.</p>
-      <label>Login<input name="team_login" type="text" value="" autocomplete="off" autocapitalize="none" spellcheck="false" required placeholder="Digite seu login"></label>
-      <label>Senha<input name="team_passcode" type="password" value="" autocomplete="new-password" required placeholder="Digite sua senha"></label>
+      <label>Login<input name="team_login" type="text" value="" autocomplete="new-password" autocapitalize="none" spellcheck="false" readonly required placeholder="Digite seu login"></label>
+      <label>Senha<input name="team_passcode" type="password" value="" autocomplete="new-password" readonly required placeholder="Digite sua senha"></label>
       <button class="primary-button" id="loginButton" type="submit" disabled>Entrar</button>
       <small id="authHint">As notas e as fotos são salvas na conta da equipe.</small>
     </form>

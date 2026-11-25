@@ -3,6 +3,7 @@ create table if not exists public.services (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now(),
+  service_date timestamptz not null default now(),
   service text not null,
   order_number text,
   meter_type text,
@@ -13,6 +14,9 @@ create table if not exists public.services (
   notes text,
   photo_path text
 );
+
+alter table public.services
+  add column if not exists service_date timestamptz not null default now();
 
 create table if not exists public.materials (
   id uuid primary key default gen_random_uuid(),
