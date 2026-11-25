@@ -44,6 +44,9 @@ create policy "Team members access their materials" on public.materials
   for all to authenticated using (user_id = (select auth.uid()))
   with check (user_id = (select auth.uid()));
 
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.services, public.materials to authenticated;
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('service-photos', 'service-photos', false, 5242880, array['image/jpeg'])
 on conflict (id) do update set public = false, file_size_limit = 5242880,
